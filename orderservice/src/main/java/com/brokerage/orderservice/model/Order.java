@@ -1,4 +1,4 @@
-package com.brokerage.assetservice.model;
+package com.brokerage.orderservice.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;

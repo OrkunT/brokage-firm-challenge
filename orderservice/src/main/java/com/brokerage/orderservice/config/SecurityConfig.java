@@ -1,4 +1,4 @@
-package com.brokerage.assetservice.config;
+package com.brokerage.orderservice.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

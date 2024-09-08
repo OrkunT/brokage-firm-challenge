@@ -1,4 +1,4 @@
-package com.brokerage.assetservice.exception;
+package com.brokerage.orderservice.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

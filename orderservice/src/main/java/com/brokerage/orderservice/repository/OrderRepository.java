@@ -1,6 +1,6 @@
-package com.brokerage.assetservice.repository;
+package com.brokerage.orderservice.repository;
 
-import com.brokerage.assetservice.model.Order;
+import com.brokerage.orderservice.model.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDateTime;

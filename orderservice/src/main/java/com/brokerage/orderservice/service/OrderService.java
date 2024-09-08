@@ -1,6 +1,6 @@
-package com.brokerage.assetservice.service;
-import com.brokerage.assetservice.model.Order;
-import com.brokerage.assetservice.repository.OrderRepository;
+package com.brokerage.orderservice.service;
+import com.brokerage.orderservice.model.Order;
+import com.brokerage.orderservice.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

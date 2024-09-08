@@ -1,6 +1,6 @@
-package com.brokerage.assetservice.controller;
-import com.brokerage.assetservice.model.Order;
-import com.brokerage.assetservice.service.OrderService;
+package com.brokerage.orderservice.controller;
+import com.brokerage.orderservice.model.Order;
+import com.brokerage.orderservice.service.OrderService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

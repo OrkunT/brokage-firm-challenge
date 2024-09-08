@@ -1,7 +1,7 @@
-package com.brokerage.assetservice;
+package com.brokerage.orderservice;
 
-import com.brokerage.assetservice.model.Order;
-import com.brokerage.assetservice.service.OrderService;
+import com.brokerage.orderservice.model.Order;
+import com.brokerage.orderservice.service.OrderService;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
