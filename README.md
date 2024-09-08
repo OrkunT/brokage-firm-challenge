@@ -34,12 +34,11 @@ Design Patterns
      -Using Kafka Transactions
      -Kafka provides a transactional API that allows you to produce and consume messages within a transaction. This ensures that either all operations within the transaction succeed or none do, maintaining data consistency.
 
-       Transactional Producers: When a service updates its database and publishes an event to Kafka, it does so within a transaction.
-       Transactional Consumers: When another service consumes the event and updates its database, it also does so within a transaction.
+      Transactional Producers: When a service updates its database and publishes an event to Kafka, it does so within a transaction.
+      Transactional Consumers: When another service consumes the event and updates its database, it also does so within a transaction.
 For example:
 
 Begin a Transaction:
-Java
 
 producer.initTransactions();
 producer.beginTransaction();
@@ -103,6 +102,7 @@ JSON
     "pk.fields": "id"
   }
 }
+
 6.3
 Libraries
 Debezium: For capturing database changes and publishing them to Kafka.
