@@ -1,10 +1,12 @@
 package com.brokerage.transactionservice.service;
 
-import com.brokerage.transactionservice.model.Asset;
+import com.brokerage.transactionservice.domain.command.AddTransactionCommand;
+import com.brokerage.assetservice.domain.command.FindOrCreateAssetCommand;
+import com.brokerage.assetservice.domain.command.removeAssetCommand;
+import com.brokerage.assetservice.domain.model.Asset;
 import com.brokerage.transactionservice.model.Transaction;
-import com.brokerage.transactionservice.repository.AssetRepository;
 import com.brokerage.transactionservice.repository.TransactionRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,65 +15,51 @@ import java.time.LocalDateTime;
 @Service
 public class TransactionService {
 
-    @Autowired
-    private TransactionRepository transactionRepository;
+    private final CommandGateway commandGateway;
+    private final TransactionRepository transactionRepository;
 
-    @Autowired
-    private AssetRepository assetRepository;
+    public TransactionService(CommandGateway commandGateway, TransactionRepository transactionRepository) {
+        this.commandGateway = commandGateway;
+        this.transactionRepository = transactionRepository;
+    }
 
-    //Since TRY is another type of asset we can treat it as one
     @Transactional
     public Transaction depositMoney(Long customerId, Double amount) {
-        Asset tryAsset = assetRepository.findByCustomerIdAndAssetName(customerId, "TRY")
-                .orElseGet(() -> {
-                    Asset newAsset = new Asset();
-                    newAsset.setCustomerId(customerId);
-                    newAsset.setAssetName("TRY");
-                    newAsset.setSize(0.0);
-                    newAsset.setUsableSize(0.0);
+        FindOrCreateAssetCommand findOrCreateAssetCommand = new FindOrCreateAssetCommand(customerId, "TRY");
+        Asset tryAsset = commandGateway.sendAndWait(findOrCreateAssetCommand);
 
-                    //TODO: Add other service duplicate transaction repo so unless write both complete, transaction fails
-                    return assetRepository.save(newAsset);
-                });
+        tryAsset.setUsableSize(amount); // Set the amount to be updated
 
-        tryAsset.setSize(tryAsset.getSize() + amount);
-        tryAsset.setUsableSize(tryAsset.getUsableSize() + amount);
-        assetRepository.save(tryAsset);
+        removeAssetCommand updateAssetCommand = new removeAssetCommand(tryAsset.getCustomerId(),tryAsset);
+        commandGateway.sendAndWait(updateAssetCommand);
 
-        Transaction transaction = new Transaction();
-        transaction.setCustomerId(customerId);
-        transaction.setAmount(amount);
-        transaction.setType("DEPOSIT");
+        AddTransactionCommand addTransactionCommand = new AddTransactionCommand(customerId, amount, "DEPOSIT", null);
+        commandGateway.sendAndWait(addTransactionCommand);
+
+        Transaction transaction = new Transaction(customerId, amount, "DEPOSIT", null);
         transaction.setTransactionDate(LocalDateTime.now());
-
-        //TODO: Add other service duplicate transaction repo so unless write both complete, transaction fails
         return transactionRepository.save(transaction);
     }
 
-
     @Transactional
     public Transaction withdrawMoney(Long customerId, Double amount, String iban) {
-        Asset tryAsset = assetRepository.findByCustomerIdAndAssetName(customerId, "TRY")
-                .orElseThrow(() -> new IllegalStateException("TRY asset not found for customer"));
+        FindOrCreateAssetCommand findOrCreateAssetCommand = new FindOrCreateAssetCommand(customerId, "TRY");
+        Asset tryAsset = commandGateway.sendAndWait(findOrCreateAssetCommand);
 
         if (tryAsset.getUsableSize() < amount) {
             throw new IllegalStateException("Insufficient funds");
         }
 
-        tryAsset.setSize(tryAsset.getSize() - amount);
-        tryAsset.setUsableSize(tryAsset.getUsableSize() - amount);
+        tryAsset.setUsableSize(amount); // Set the amount to be updated
 
-        //TODO: Add other service duplicate transaction repo so unless write both complete, transaction fails
-        assetRepository.save(tryAsset);
+        removeAssetCommand updateAssetCommand = new removeAssetCommand(tryAsset.getCustomerId(),tryAsset);
+        commandGateway.sendAndWait(updateAssetCommand);
 
-        Transaction transaction = new Transaction();
-        transaction.setCustomerId(customerId);
-        transaction.setAmount(amount);
-        transaction.setType("WITHDRAW");
-        transaction.setIban(iban);
+        AddTransactionCommand addTransactionCommand = new AddTransactionCommand(customerId, amount, "WITHDRAW", iban);
+        commandGateway.sendAndWait(addTransactionCommand);
+
+        Transaction transaction = new Transaction(customerId, amount, "WITHDRAW", iban);
         transaction.setTransactionDate(LocalDateTime.now());
-
-        //TODO: Add other service duplicate transaction repo so before write both transaction fails
         return transactionRepository.save(transaction);
     }
 }

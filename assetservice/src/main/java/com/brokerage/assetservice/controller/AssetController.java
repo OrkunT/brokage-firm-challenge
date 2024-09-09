@@ -1,6 +1,6 @@
 package com.brokerage.assetservice.controller;
 
-import com.brokerage.assetservice.model.Asset;
+import com.brokerage.assetservice.domain.model.Asset;
 import com.brokerage.assetservice.service.AssetService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -12,8 +12,12 @@ import java.util.List;
 @RequestMapping("/api/assets")
 public class AssetController {
 
+    private final AssetService assetService;
+
     @Autowired
-    private AssetService assetService;
+    public AssetController(AssetService assetService) {
+        this.assetService = assetService;
+    }
 
     @GetMapping
     public ResponseEntity<List<Asset>> listAssets(
@@ -23,7 +27,6 @@ public class AssetController {
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam(defaultValue = "asc") String direction) {
         List<Asset> assets = assetService.listAssets(customerId, page, size, sortBy, direction);
-        System.out.println("Assets: " + assets); // Add this line for debugging
         return ResponseEntity.ok(assets);
     }
 }

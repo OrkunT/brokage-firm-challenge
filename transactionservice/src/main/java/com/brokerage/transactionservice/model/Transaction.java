@@ -21,5 +21,15 @@ public class Transaction {
     private String iban; // Only for withdrawals
     private LocalDateTime transactionDate;
 
+    public Transaction(){};
+
+    public Transaction(Long customerId, Double amount, String type, String iban) {
+        this.customerId = customerId;
+        this.amount = amount;
+        this.type = type;
+        this.iban = iban;
+        this.transactionDate = LocalDateTime.now(); // Set the transaction date to the current date and time
+    }
+
     // Getters and Setters
 }

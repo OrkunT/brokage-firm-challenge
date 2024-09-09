@@ -1,6 +1,6 @@
 package com.brokerage.assetservice.repository;
 
-import com.brokerage.assetservice.model.Asset;
+import com.brokerage.assetservice.domain.model.Asset;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

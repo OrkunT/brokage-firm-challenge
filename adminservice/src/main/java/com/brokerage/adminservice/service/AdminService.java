@@ -1,10 +1,14 @@
 package com.brokerage.adminservice.service;
 
-import com.brokerage.adminservice.model.Asset;
-import com.brokerage.adminservice.model.Order;
-import com.brokerage.adminservice.repository.AssetRepository;
-import com.brokerage.adminservice.repository.OrderRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.brokerage.adminservice.domain.command.FetchPendingOrdersCommand;
+import com.brokerage.adminservice.domain.command.MatchOrdersCommand;
+import com.brokerage.adminservice.domain.command.UpdateAssetCommand;
+import com.brokerage.adminservice.domain.command.UpdateOrderStatusCommand;
+import com.brokerage.adminservice.domain.event.PendingOrdersFetchedEvent;
+import com.brokerage.assetservice.domain.model.Asset;
+import com.brokerage.orderservice.domain.model.Order;
+import org.axonframework.commandhandling.gateway.CommandGateway;
+import org.axonframework.eventhandling.EventHandler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,71 +17,66 @@ import java.util.List;
 @Service
 public class AdminService {
 
-    @Autowired
-    private OrderRepository orderRepository;
+    private final CommandGateway commandGateway;
 
-    @Autowired
-    private AssetRepository assetRepository;
+    public AdminService(CommandGateway commandGateway) {
+        this.commandGateway = commandGateway;
+    }
 
     @Transactional
     public void matchOrders() {
-        List<Order> pendingOrders = orderRepository.findByStatus("PENDING");
+        FetchPendingOrdersCommand fetchPendingOrdersCommand = new FetchPendingOrdersCommand();
+        commandGateway.sendAndWait(fetchPendingOrdersCommand);
+    }
+
+    @EventHandler
+    public void on(PendingOrdersFetchedEvent event) {
+        List<Order> pendingOrders = event.getPendingOrders();
+
+        MatchOrdersCommand matchOrdersCommand = new MatchOrdersCommand(pendingOrders);
+        commandGateway.sendAndWait(matchOrdersCommand);
 
         for (Order order : pendingOrders) {
             if ("BUY".equals(order.getOrderSide())) {
-                Asset tryAsset = assetRepository.findByCustomerIdAndAssetName(order.getCustomerId(), "TRY")
-                        .orElseThrow(() -> new IllegalStateException("TRY asset not found for customer"));
+                Asset tryAsset = new Asset();
+                tryAsset.setCustomerId(order.getCustomerId());
+                tryAsset.setAssetName("TRY");
+                tryAsset.setUsableSize(order.getPrice() * order.getSize());
 
-                System.out.println("Initial TRY Size (BUY): " + tryAsset.getSize());
+                UpdateAssetCommand updateAssetCommand = new UpdateAssetCommand(tryAsset, "DECREASE");
+                commandGateway.sendAndWait(updateAssetCommand);
 
-                if (tryAsset.getUsableSize() >= order.getPrice() * order.getSize()) {
-                    double amountToDeduct = order.getPrice() * order.getSize();
-                    tryAsset.setUsableSize(tryAsset.getUsableSize() - amountToDeduct);
-                    tryAsset.setSize(tryAsset.getSize() - amountToDeduct); // Ensure both size and usableSize are updated
-                    assetRepository.save(tryAsset);
+                Asset asset = new Asset();
+                asset.setCustomerId(order.getCustomerId());
+                asset.setAssetName(order.getAssetName());
+                asset.setSize(order.getSize());
+                asset.setUsableSize(order.getSize());
 
-                    System.out.println("Updated TRY Size (BUY): " + tryAsset.getSize());
+                UpdateAssetCommand updateAssetCommand2 = new UpdateAssetCommand(asset, "INCREASE");
+                commandGateway.sendAndWait(updateAssetCommand2);
 
-                    Asset asset = assetRepository.findByCustomerIdAndAssetName(order.getCustomerId(), order.getAssetName())
-                            .orElse(new Asset());
-                    asset.setCustomerId(order.getCustomerId());
-                    asset.setAssetName(order.getAssetName());
-                    asset.setSize(asset.getSize() + order.getSize());
-                    asset.setUsableSize(asset.getUsableSize() + order.getSize());
-                    assetRepository.save(asset);
-
-                    System.out.println("Updated " + order.getAssetName() + " Size (BUY): " + asset.getSize());
-
-                    order.setStatus("MATCHED");
-                    orderRepository.save(order);
-                }
+                UpdateOrderStatusCommand updateOrderStatusCommand = new UpdateOrderStatusCommand(order, "MATCHED");
+                commandGateway.sendAndWait(updateOrderStatusCommand);
             } else if ("SELL".equals(order.getOrderSide())) {
-                Asset asset = assetRepository.findByCustomerIdAndAssetName(order.getCustomerId(), order.getAssetName())
-                        .orElseThrow(() -> new IllegalStateException("Asset not found for customer"));
+                Asset asset = new Asset();
+                asset.setCustomerId(order.getCustomerId());
+                asset.setAssetName(order.getAssetName());
+                asset.setUsableSize(order.getSize());
 
-                System.out.println("Initial " + order.getAssetName() + " Size (SELL): " + asset.getSize());
+                UpdateAssetCommand updateAssetCommand = new UpdateAssetCommand(asset, "DECREASE");
+                commandGateway.sendAndWait(updateAssetCommand);
 
-                if (asset.getUsableSize() >= order.getSize()) {
-                    asset.setUsableSize(asset.getUsableSize() - order.getSize());
-                    asset.setSize(asset.getSize() - order.getSize()); // Ensure both size and usableSize are updated
-                    assetRepository.save(asset);
+                Asset tryAsset = new Asset();
+                tryAsset.setCustomerId(order.getCustomerId());
+                tryAsset.setAssetName("TRY");
+                tryAsset.setSize(order.getPrice() * order.getSize());
+                tryAsset.setUsableSize(order.getPrice() * order.getSize());
 
-                    System.out.println("Updated " + order.getAssetName() + " Size (SELL): " + asset.getSize());
+                UpdateAssetCommand updateAssetCommand2 = new UpdateAssetCommand(tryAsset, "INCREASE");
+                commandGateway.sendAndWait(updateAssetCommand2);
 
-                    Asset tryAsset = assetRepository.findByCustomerIdAndAssetName(order.getCustomerId(), "TRY")
-                            .orElse(new Asset());
-                    double amountToAdd = order.getPrice() * order.getSize();
-                    tryAsset.setCustomerId(order.getCustomerId());
-                    tryAsset.setAssetName("TRY");
-                    tryAsset.setSize(tryAsset.getSize() + amountToAdd);
-                    tryAsset.setUsableSize(tryAsset.getUsableSize() + amountToAdd);
-                    assetRepository.save(tryAsset);
-
-                    System.out.println("Updated TRY Size (SELL): " + tryAsset.getSize());
-
-                    order.setStatus("MATCHED");
-                    orderRepository.save(order);
-                }
+                UpdateOrderStatusCommand updateOrderStatusCommand = new UpdateOrderStatusCommand(order, "MATCHED");
+                commandGateway.sendAndWait(updateOrderStatusCommand);
             }
         }
     }

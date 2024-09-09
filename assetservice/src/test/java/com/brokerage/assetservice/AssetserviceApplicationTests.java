@@ -1,6 +1,6 @@
 package com.brokerage.assetservice;
 
-import com.brokerage.assetservice.model.Asset;
+import com.brokerage.assetservice.domain.model.Asset;
 import com.brokerage.assetservice.repository.AssetRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
