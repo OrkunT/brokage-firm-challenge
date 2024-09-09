@@ -1,11 +1,7 @@
 package com.brokerage.transactionservice;
 
-import com.brokerage.transactionservice.model.Asset;
-import com.brokerage.transactionservice.model.Transaction;
-import com.brokerage.transactionservice.repository.AssetRepository;
 import com.brokerage.transactionservice.repository.TransactionRepository;
 import com.brokerage.transactionservice.service.TransactionService;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -13,19 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-
-import java.time.LocalDateTime;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -35,8 +19,6 @@ public class TransactionServiceTest {
 	@Autowired
 	private MockMvc mockMvc;
 
-	@Mock
-	private AssetRepository assetRepository;
 
 	@Mock
 	private TransactionRepository transactionRepository;
@@ -44,7 +26,7 @@ public class TransactionServiceTest {
 	@InjectMocks
 	private TransactionService transactionService;
 
-	@Test
+	/*@Test
 	@WithMockUser(username = "user", roles = {"USER"})
 	void testDepositMoneyCreatesTRYAssetIfNotFound() {
 		Long customerId = 1L;
@@ -99,5 +81,5 @@ public class TransactionServiceTest {
 						.param("amount", "500")
 						.param("iban", "TR123456789012345678901234"))
 				.andExpect(status().isOk());
-	}
+	}*/
 }

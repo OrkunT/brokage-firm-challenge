@@ -1,0 +1,6 @@
+2024-09-09 19:24:07.183409+03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "user" not found (this database is empty); SQL statement:
+select u1_0.username,u1_0.password,u1_0.role from "user" u1_0 where u1_0.username=? [42104-224]
+2024-09-09 19:24:07.363459+03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "user" not found (this database is empty); SQL statement:
+select u1_0.username,u1_0.password,u1_0.role from "user" u1_0 where u1_0.username=? [42104-224]

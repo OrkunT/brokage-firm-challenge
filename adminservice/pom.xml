@@ -86,13 +86,11 @@
 			<groupId>com.brokerage</groupId>
 			<artifactId>assetservice</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
-			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.brokerage</groupId>
 			<artifactId>orderservice</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
-			<scope>compile</scope>
 		</dependency>
 	</dependencies>
 

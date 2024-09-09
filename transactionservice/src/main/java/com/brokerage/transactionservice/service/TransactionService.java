@@ -1,9 +1,9 @@
 package com.brokerage.transactionservice.service;
 
-import com.brokerage.transactionservice.domain.command.AddTransactionCommand;
 import com.brokerage.assetservice.domain.command.FindOrCreateAssetCommand;
 import com.brokerage.assetservice.domain.command.removeAssetCommand;
 import com.brokerage.assetservice.domain.model.Asset;
+import com.brokerage.transactionservice.domain.command.AddTransactionCommand;
 import com.brokerage.transactionservice.model.Transaction;
 import com.brokerage.transactionservice.repository.TransactionRepository;
 import org.axonframework.commandhandling.gateway.CommandGateway;
