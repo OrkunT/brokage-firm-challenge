@@ -1,9 +1,9 @@
 package com.brokerage.transactionservice.domain.query.handler;
 
-import com.brokerage.orderservice.domain.model.Order;
-import com.brokerage.orderservice.domain.query.FindOrderByIdQuery;
-import com.brokerage.orderservice.domain.query.ListOrdersQuery;
-import com.brokerage.orderservice.repository.OrderRepository;
+import com.brokerage.transactionservice.domain.model.Order;
+import com.brokerage.transactionservice.domain.query.FindOrderByIdQuery;
+import com.brokerage.transactionservice.domain.query.ListOrdersQuery;
+import com.brokerage.transactionservice.repository.OrderRepository;
 import org.axonframework.queryhandling.QueryHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

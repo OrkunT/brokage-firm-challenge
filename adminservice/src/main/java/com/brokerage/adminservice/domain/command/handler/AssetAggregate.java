@@ -2,7 +2,7 @@ package com.brokerage.adminservice.domain.command.handler;
 
 import com.brokerage.adminservice.domain.command.UpdateAssetCommand;
 import com.brokerage.adminservice.domain.event.AssetUpdatedEvent;
-import com.brokerage.assetservice.domain.model.Asset;
+import com.brokerage.adminservice.domain.model.Asset;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;

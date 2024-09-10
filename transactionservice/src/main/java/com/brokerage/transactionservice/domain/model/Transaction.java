@@ -22,6 +22,25 @@ public class Transaction {
     private String assetName;
     private Double amount;
     private LocalDateTime transactionDate;
+    private String type;
+    private String iban;
+
+    public Transaction(){};
+
+    public Transaction(Long customerId, String assetName, Double amount, LocalDateTime transactionDate) {
+        this.customerId = customerId;
+        this.assetName = assetName;
+        this.amount = amount;
+        this.transactionDate = transactionDate;
+    }
+
+    public Transaction(Long customerId, Double amount, String type, String iban) {
+        this.customerId = customerId;
+        this.assetName = assetName;
+        this.amount = amount;
+        this.type = type;
+        this.iban = iban;
+    }
 
     // Getters and Setters
 }

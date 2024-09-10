@@ -1,7 +1,7 @@
 package com.brokerage.adminservice.domain.command;
 
 
-import com.brokerage.orderservice.domain.model.Order;
+import com.brokerage.adminservice.domain.model.Order;
 
 public class UpdateOrderStatusCommand {
     private final Order order;

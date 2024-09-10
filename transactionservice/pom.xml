@@ -83,17 +83,9 @@
 			<version>4.10.0</version>
 		</dependency>
 		<dependency>
-			<groupId>com.brokerage</groupId>
-			<artifactId>assetservice</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-			<scope>compile</scope>
+			<groupId>jakarta.validation</groupId>
+			<artifactId>jakarta.validation-api</artifactId>
 		</dependency>
-        <dependency>
-            <groupId>com.brokerage</groupId>
-            <artifactId>orderservice</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
 	</dependencies>
 
 	<build>
@@ -108,6 +100,9 @@
 							<artifactId>lombok</artifactId>
 						</exclude>
 					</excludes>
+					<includeSystemScope>true</includeSystemScope>
+					<classifier>exec</classifier>
+					<layout>ZIP</layout>
 				</configuration>
 			</plugin>
 		</plugins>

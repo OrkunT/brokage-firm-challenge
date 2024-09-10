@@ -1,6 +1,6 @@
 package com.brokerage.adminservice.domain.event;
 
-import com.brokerage.assetservice.domain.model.Asset;
+import com.brokerage.adminservice.domain.model.Asset;
 
 public class AssetUpdatedEvent {
     private final Asset asset;

@@ -1,6 +1,6 @@
 package com.brokerage.adminservice.domain.command;
 
-import com.brokerage.assetservice.domain.model.Asset;
+import com.brokerage.adminservice.domain.model.Asset;
 
 public class UpdateAssetCommand {
     private final Asset asset;

@@ -1,6 +1,6 @@
 package com.brokerage.adminservice.domain.event;
 
-import com.brokerage.orderservice.domain.model.Order;
+import com.brokerage.adminservice.domain.model.Order;
 
 import java.util.List;
 

@@ -1,6 +1,6 @@
 package com.brokerage.transactionservice.domain.event;
 
-import com.brokerage.transactionservice.model.Transaction;
+import com.brokerage.transactionservice.domain.model.Transaction;
 import lombok.Getter;
 
 @Getter

@@ -1,8 +1,8 @@
 package com.brokerage.transactionservice.domain.saga;
 
-import com.brokerage.orderservice.domain.event.OrderCompletedEvent;
-import com.brokerage.orderservice.domain.event.OrderCreatedEvent;
-import com.brokerage.orderservice.domain.event.OrderUpdatedEvent;
+import com.brokerage.transactionservice.domain.event.OrderCompletedEvent;
+import com.brokerage.transactionservice.domain.event.OrderCreatedEvent;
+import com.brokerage.transactionservice.domain.event.OrderUpdatedEvent;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.axonframework.modelling.saga.EndSaga;
 import org.axonframework.modelling.saga.SagaEventHandler;

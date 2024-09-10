@@ -3,7 +3,7 @@ package com.brokerage.adminservice.domain.command.handler;
 import com.brokerage.adminservice.domain.command.MatchOrdersCommand;
 import com.brokerage.adminservice.domain.command.UpdateOrderStatusCommand;
 import com.brokerage.adminservice.domain.event.OrderMatchedEvent;
-import com.brokerage.orderservice.domain.model.Order;
+import com.brokerage.adminservice.domain.model.Order;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;

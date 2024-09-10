@@ -2,7 +2,7 @@ package com.brokerage.transactionservice.domain.command.handler;
 
 import com.brokerage.transactionservice.domain.command.AddTransactionCommand;
 import com.brokerage.transactionservice.domain.event.TransactionAddedEvent;
-import com.brokerage.transactionservice.model.Transaction;
+import com.brokerage.transactionservice.domain.model.Transaction;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
