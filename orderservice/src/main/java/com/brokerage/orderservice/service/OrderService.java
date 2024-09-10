@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+
 @Service
 public class OrderService {
 
@@ -33,7 +34,7 @@ public class OrderService {
 
         System.out.println("Service - Creating Order: " + order);
 
-        CreateOrderCommand command = new CreateOrderCommand(order.getId().toString(), order.getCustomerId(), order.getAssetName(), order.getOrderSide(), order.getPrice(), order.getSize());
+        CreateOrderCommand command = new CreateOrderCommand(order.getId(), order.getCustomerId(), order.getAssetName(), order.getOrderSide(), order.getPrice(), order.getSize());
         return commandGateway.send(command).thenApply(result -> {
             System.out.println("Service - Created Order: " + order);
             return order;
@@ -73,7 +74,7 @@ public class OrderService {
         System.out.println("Service - Deleting Order: " + orderId);
         return findOrderById(orderId).thenCompose(order -> {
             if (order != null && "PENDING".equals(order.getStatus())) {
-                DeleteOrderCommand command = new DeleteOrderCommand(orderId.toString());
+                DeleteOrderCommand command = new DeleteOrderCommand(orderId);
                 return commandGateway.send(command).thenApply(result -> {
                     System.out.println("Service - Deleted Order: " + orderId);
                     return null;
@@ -84,4 +85,3 @@ public class OrderService {
         });
     }
 }
-

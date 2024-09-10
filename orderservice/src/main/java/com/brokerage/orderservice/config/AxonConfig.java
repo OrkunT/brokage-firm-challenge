@@ -19,8 +19,9 @@ import org.axonframework.extensions.kafka.eventhandling.producer.DefaultProducer
 import org.axonframework.extensions.kafka.eventhandling.producer.KafkaPublisher;
 import org.axonframework.extensions.kafka.eventhandling.producer.ProducerFactory;
 import org.axonframework.modelling.command.Repository;
-import org.axonframework.modelling.command.AggregateAnnotationCommandHandler;
 import org.axonframework.serialization.Serializer;
+import org.axonframework.queryhandling.QueryBus;
+import org.axonframework.queryhandling.SimpleQueryBus;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -86,5 +87,10 @@ public class AxonConfig {
         return EventSourcingRepository.builder(OrderAggregate.class)
                 .eventStore(eventStore)
                 .build();
+    }
+
+    @Bean
+    public QueryBus queryBus() {
+        return SimpleQueryBus.builder().build();
     }
 }
