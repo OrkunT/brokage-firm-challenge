@@ -165,3 +165,6 @@ Deployment
 
 3. CI/CD Pipeline
    - Implement a CI/CD pipeline using tools like Jenkins or GitHub Actions to automate the build and deployment process.
+
+  Sample Output with Axon event server each microservice have its own db command segragation, seperation of conserns as well as saga implemented
+   - ![image](https://github.com/user-attachments/assets/9a05856a-7142-42c3-b67a-9a70a441c95f)
