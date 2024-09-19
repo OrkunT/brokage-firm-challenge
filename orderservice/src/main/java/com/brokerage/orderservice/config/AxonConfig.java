@@ -1,96 +1,68 @@
 package com.brokerage.orderservice.config;
 
-import com.brokerage.orderservice.domain.command.handler.OrderAggregate;
-import org.apache.kafka.clients.producer.ProducerConfig;
-import org.apache.kafka.common.serialization.ByteArraySerializer;
-import org.apache.kafka.common.serialization.StringSerializer;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import org.axonframework.commandhandling.CommandBus;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.axonframework.commandhandling.gateway.DefaultCommandGateway;
-import org.axonframework.config.Configurer;
-import org.axonframework.config.DefaultConfigurer;
-import org.axonframework.eventhandling.EventBus;
-import org.axonframework.eventhandling.SimpleEventBus;
-import org.axonframework.eventsourcing.EventSourcingRepository;
-import org.axonframework.eventsourcing.eventstore.EventStore;
-import org.axonframework.eventsourcing.eventstore.EmbeddedEventStore;
-import org.axonframework.eventsourcing.eventstore.inmemory.InMemoryEventStorageEngine;
-import org.axonframework.extensions.kafka.eventhandling.producer.DefaultProducerFactory;
-import org.axonframework.extensions.kafka.eventhandling.producer.KafkaPublisher;
-import org.axonframework.extensions.kafka.eventhandling.producer.ProducerFactory;
-import org.axonframework.modelling.command.Repository;
-import org.axonframework.serialization.Serializer;
-import org.axonframework.queryhandling.QueryBus;
-import org.axonframework.queryhandling.SimpleQueryBus;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.axonframework.commandhandling.gateway.IntervalRetryScheduler;
+import org.axonframework.common.transaction.TransactionManager;
+import org.axonframework.config.ConfigurationScopeAwareProvider;
+import org.axonframework.config.ConfigurerModule;
+import org.axonframework.deadline.DeadlineManager;
+import org.axonframework.deadline.SimpleDeadlineManager;
+import org.axonframework.modelling.command.RepositoryProvider;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 @Configuration
 public class AxonConfig {
-
     @Bean
-    public Configurer configurer(KafkaPublisher<String, byte[]> kafkaPublisher, @Qualifier("xStreamSerializer") Serializer serializer) {
-        Configurer configurer = DefaultConfigurer.defaultConfiguration();
-        configurer.eventProcessing(eventProcessingConfigurer ->
-                eventProcessingConfigurer.registerEventHandler(configuration -> kafkaPublisher)
-        );
-        configurer.configureSerializer(c -> serializer);
-        configurer.configureAggregate(OrderAggregate.class);
-        return configurer;
+    public CommandGateway commandGatewayWithRetry(CommandBus commandBus){
+
+        ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(5);
+        IntervalRetryScheduler rs = IntervalRetryScheduler.builder().retryExecutor(scheduledExecutorService).maxRetryCount(5).retryInterval(1000).build();
+        return DefaultCommandGateway.builder().commandBus(commandBus).retryScheduler(rs).build();
     }
 
-    @Bean
-    public CommandGateway commandGateway(CommandBus commandBus) {
-        return DefaultCommandGateway.builder()
-                .commandBus(commandBus)
+    @Bean(destroyMethod = "")
+    public DeadlineManager deadlineManager(TransactionManager transactionManager,
+                                           org.axonframework.config.Configuration config) {
+        return SimpleDeadlineManager.builder()
+                .transactionManager(transactionManager)
+                .scopeAwareProvider(new ConfigurationScopeAwareProvider(config))
                 .build();
     }
 
-    @Bean
-    public EventBus eventBus() {
-        return SimpleEventBus.builder().build();
+    @Bean(destroyMethod = "shutdown")
+    public ScheduledExecutorService workerExecutorService() {
+        return Executors.newScheduledThreadPool(4);
+    }
+
+    @Autowired
+    public void configureSerializers(ObjectMapper objectMapper) {
+        objectMapper.activateDefaultTyping(objectMapper.getPolymorphicTypeValidator(), ObjectMapper.DefaultTyping.JAVA_LANG_OBJECT);
+        objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+        objectMapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
     }
 
     @Bean
-    public KafkaPublisher<String, byte[]> kafkaPublisher(@Qualifier("axonProducerFactory") ProducerFactory<String, byte[]> producerFactory) {
-        return KafkaPublisher.<String, byte[]>builder()
-                .producerFactory(producerFactory)
-                .topicResolver(event -> Optional.of("your-topic-name")) // Example topic resolver
-                .build();
+    public ConfigurerModule eventProcessingCustomizer() {
+        return configurer -> configurer
+                .eventProcessing()
+                .registerPooledStreamingEventProcessor(
+                        "com.brokerage.orderservice.domain.command.handler",
+                        org.axonframework.config.Configuration::eventStore,
+                        (c, b) -> b.workerExecutor(workerExecutorService())
+                                .batchSize(100)
+                );
     }
 
-    @Bean(name = "axonProducerFactory")
-    public ProducerFactory<String, byte[]> axonProducerFactory() {
-        Map<String, Object> configProps = new HashMap<>();
-        configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
-        configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class);
-        return DefaultProducerFactory.<String, byte[]>builder()
-                .configuration(configProps)
-                .build();
-    }
-
-    @Bean
-    public EventStore eventStore() {
-        return EmbeddedEventStore.builder()
-                .storageEngine(new InMemoryEventStorageEngine())
-                .build();
-    }
-
-    @Bean
-    public Repository<OrderAggregate> orderAggregateRepository(EventStore eventStore) {
-        return EventSourcingRepository.builder(OrderAggregate.class)
-                .eventStore(eventStore)
-                .build();
-    }
-
-    @Bean
-    public QueryBus queryBus() {
-        return SimpleQueryBus.builder().build();
-    }
 }

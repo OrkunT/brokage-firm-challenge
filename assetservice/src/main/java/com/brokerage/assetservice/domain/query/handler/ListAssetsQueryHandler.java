@@ -1,11 +1,11 @@
 package com.brokerage.assetservice.domain.query.handler;
 
-import com.brokerage.assetservice.domain.model.Asset;
-import com.brokerage.assetservice.domain.query.ListAssetsQuery;
+import com.brokerage.assetservice.repository.AssetRepository;
+import com.brokerage.common.domain.model.dto.Asset;
+import com.brokerage.common.domain.query.ListAssetsQuery;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import com.brokerage.assetservice.repository.AssetRepository;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

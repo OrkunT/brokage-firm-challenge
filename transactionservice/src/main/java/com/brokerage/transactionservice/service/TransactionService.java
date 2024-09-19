@@ -2,9 +2,9 @@ package com.brokerage.transactionservice.service;
 
 import com.brokerage.transactionservice.domain.command.FindOrCreateAssetCommand;
 import com.brokerage.transactionservice.domain.command.removeAssetCommand;
-import com.brokerage.transactionservice.domain.model.Asset;
+import com.brokerage.common.domain.model.dto.Asset;
 import com.brokerage.transactionservice.domain.command.AddTransactionCommand;
-import com.brokerage.transactionservice.domain.model.Transaction;
+import com.brokerage.common.domain.model.dto.Transaction;
 import com.brokerage.transactionservice.repository.TransactionRepository;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.springframework.stereotype.Service;
@@ -33,10 +33,10 @@ public class TransactionService {
         removeAssetCommand updateAssetCommand = new removeAssetCommand(tryAsset.getCustomerId(),tryAsset);
         commandGateway.sendAndWait(updateAssetCommand);
 
-        AddTransactionCommand addTransactionCommand = new AddTransactionCommand(customerId, amount, "DEPOSIT", null);
+        AddTransactionCommand addTransactionCommand = new AddTransactionCommand(customerId, amount, "TRY","DEPOSIT");
         commandGateway.sendAndWait(addTransactionCommand);
 
-        Transaction transaction = new Transaction(customerId, amount, "DEPOSIT", null);
+        Transaction transaction = new Transaction(customerId, amount, "TRY","DEPOSIT");
         transaction.setTransactionDate(LocalDateTime.now());
         return transactionRepository.save(transaction);
     }
@@ -52,13 +52,15 @@ public class TransactionService {
 
         tryAsset.setUsableSize(amount); // Set the amount to be updated
 
-        removeAssetCommand updateAssetCommand = new removeAssetCommand(tryAsset.getCustomerId(),tryAsset);
-        commandGateway.sendAndWait(updateAssetCommand);
-
-        AddTransactionCommand addTransactionCommand = new AddTransactionCommand(customerId, amount, "WITHDRAW", iban);
-        commandGateway.sendAndWait(addTransactionCommand);
-
-        Transaction transaction = new Transaction(customerId, amount, "WITHDRAW", iban);
+        try {
+                removeAssetCommand updateAssetCommand = new removeAssetCommand(tryAsset.getCustomerId(), tryAsset);
+                commandGateway.sendAndWait(updateAssetCommand);
+        }
+        catch (Exception e)
+        {
+            return null;
+        }
+        Transaction transaction = new Transaction(customerId, amount, "TRY","WITHDRAW");
         transaction.setTransactionDate(LocalDateTime.now());
         return transactionRepository.save(transaction);
     }

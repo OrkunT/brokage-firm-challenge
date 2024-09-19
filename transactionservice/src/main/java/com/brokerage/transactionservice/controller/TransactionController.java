@@ -1,6 +1,6 @@
 package com.brokerage.transactionservice.controller;
 
-import com.brokerage.transactionservice.domain.model.Transaction;
+import com.brokerage.common.domain.model.dto.Transaction;
 import com.brokerage.transactionservice.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

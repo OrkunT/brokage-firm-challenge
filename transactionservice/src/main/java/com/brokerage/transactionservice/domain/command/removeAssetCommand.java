@@ -1,6 +1,6 @@
 package com.brokerage.transactionservice.domain.command;
 
-import com.brokerage.transactionservice.domain.model.Asset;
+import com.brokerage.common.domain.model.dto.Asset;
 import lombok.Getter;
 import lombok.Setter;
 

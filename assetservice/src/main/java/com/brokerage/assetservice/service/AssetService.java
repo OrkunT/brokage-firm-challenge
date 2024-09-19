@@ -1,14 +1,16 @@
 package com.brokerage.assetservice.service;
 
 import com.brokerage.assetservice.domain.command.addAssetCommand;
-import com.brokerage.assetservice.domain.command.removeAssetCommand;
-import com.brokerage.assetservice.domain.model.Asset;
-import com.brokerage.assetservice.domain.query.ListAssetsQuery;
+import com.brokerage.assetservice.domain.command.updateAssetCommand;
 import com.brokerage.assetservice.domain.query.handler.ListAssetsQueryHandler;
+import com.brokerage.common.domain.model.dto.Asset;
+import com.brokerage.common.domain.query.ListAssetsQuery;
 import org.axonframework.commandhandling.gateway.CommandGateway;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class AssetService {
@@ -25,13 +27,20 @@ public class AssetService {
         return listAssetsQueryHandler.handle(query);
     }
 
-    public void addAsset(Long customerId, Asset asset) {
+    public CompletableFuture<Asset> addAsset(Asset asset) {
+        Long customerId = asset.getCustomerId();
         addAssetCommand command = new addAssetCommand(customerId, asset);
         commandGateway.send(command);
+        return commandGateway.send(command).thenApply(result -> {
+            System.out.println("Service - Created Order: " + asset);
+            return asset;
+        });
     }
 
-    public void removeAsset(Long customerId, Asset asset) {
-        removeAssetCommand command = new removeAssetCommand(customerId, asset);
-        commandGateway.send(command);
+    public CompletableFuture<ResponseEntity<Object>>  removeAsset(Long customerId, Asset asset) {
+        updateAssetCommand command = new updateAssetCommand(customerId,asset,"SELL");
+        return commandGateway.send(command).thenApply(result -> {
+            return null;
+        });
     }
 }

@@ -3,9 +3,11 @@ package com.brokerage.orderservice.service;
 import com.brokerage.orderservice.domain.command.CreateOrderCommand;
 import com.brokerage.orderservice.domain.command.DeleteOrderCommand;
 import com.brokerage.orderservice.domain.command.UpdateOrderCommand;
-import com.brokerage.orderservice.domain.model.Order;
-import com.brokerage.orderservice.domain.query.FindOrderByIdQuery;
-import com.brokerage.orderservice.domain.query.ListOrdersQuery;
+import com.brokerage.common.domain.model.dto.Order;
+import com.brokerage.common.domain.query.FindOrderByIdQuery;
+import com.brokerage.common.domain.query.ListOrdersQuery;
+import com.brokerage.common.domain.query.OrderState;
+import com.brokerage.orderservice.repository.OrderRepository;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.axonframework.messaging.responsetypes.ResponseTypes;
 import org.axonframework.queryhandling.QueryGateway;
@@ -26,6 +28,9 @@ public class OrderService {
     @Autowired
     private QueryGateway queryGateway;
 
+    @Autowired
+    private OrderRepository orderRepository;
+
     public CompletableFuture<Order> createOrder(Order order) {
         UUID orderId = UUID.randomUUID();
         order.setId(orderId.toString());
@@ -41,9 +46,9 @@ public class OrderService {
         });
     }
 
-    public CompletableFuture<List<Order>> listOrders(Long customerId, LocalDateTime startDate, LocalDateTime endDate) {
+    public CompletableFuture<List<Order>> listOrders(Long customerId, OrderState status, LocalDateTime startDate, LocalDateTime endDate) {
         System.out.println("Service - Listing Orders for Customer ID: " + customerId + ", Start Date: " + startDate + ", End Date: " + endDate);
-        ListOrdersQuery query = new ListOrdersQuery(customerId, startDate, endDate);
+        ListOrdersQuery query = new ListOrdersQuery(customerId, status, startDate, endDate);
         return queryGateway.query(query, ResponseTypes.multipleInstancesOf(Order.class)).thenApply(orders -> {
             System.out.println("Service - Fetched Orders: " + orders);
             return orders;

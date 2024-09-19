@@ -4,56 +4,37 @@ import com.brokerage.orderservice.domain.command.CreateOrderCommand;
 import com.brokerage.orderservice.domain.command.UpdateOrderCommand;
 import com.brokerage.orderservice.domain.event.OrderCreatedEvent;
 import com.brokerage.orderservice.domain.event.OrderUpdatedEvent;
-import org.axonframework.commandhandling.CommandHandler;
+import lombok.NoArgsConstructor;
 import org.axonframework.eventsourcing.EventSourcingHandler;
-import org.axonframework.modelling.command.AggregateIdentifier;
+import org.axonframework.modelling.command.*;
 import org.axonframework.spring.stereotype.Aggregate;
-import org.axonframework.modelling.command.AggregateLifecycle;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Aggregate
+@NoArgsConstructor
 public class OrderAggregate {
 
     @AggregateIdentifier
     private UUID orderId;
     private Long customerId;
     private String assetName;
-    private String orderSide;
+    private Double orderSide;
     private Double price;
     private Double size;
     private String status;
     private LocalDateTime createDate;
 
     // Default constructor required by Axon
-    public OrderAggregate() {}
+    public OrderAggregate(CreateOrderCommand command)
+    {
 
-    @CommandHandler
-    public OrderAggregate(CreateOrderCommand command) {
-        AggregateLifecycle.apply(new OrderCreatedEvent(
-                command.getOrderId(),
-                command.getCustomerId(),
-                command.getAssetName(),
-                command.getOrderSide(),
-                command.getPrice(),
-                command.getSize()
-        ));
     }
 
-    @CommandHandler
-    public void handle(UpdateOrderCommand command) {
-        // Apply necessary events if needed
-        AggregateLifecycle.apply(new OrderUpdatedEvent(
-                command.getOrderId(),
-                command.getCustomerId(),
-                command.getAssetName(),
-                command.getOrderSide(),
-                command.getPrice(),
-                command.getSize(),
-                command.getStatus(),
-                command.getCreateDate()
-        ));
+    public OrderAggregate(UpdateOrderCommand command)
+    {
+
     }
 
     @EventSourcingHandler
@@ -78,4 +59,5 @@ public class OrderAggregate {
         this.status = event.getStatus();
         this.createDate = event.getCreateDate();
     }
+
 }

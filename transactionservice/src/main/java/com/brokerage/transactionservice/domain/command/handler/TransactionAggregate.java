@@ -2,7 +2,7 @@ package com.brokerage.transactionservice.domain.command.handler;
 
 import com.brokerage.transactionservice.domain.command.AddTransactionCommand;
 import com.brokerage.transactionservice.domain.event.TransactionAddedEvent;
-import com.brokerage.transactionservice.domain.model.Transaction;
+import com.brokerage.common.domain.model.dto.Transaction;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
@@ -17,18 +17,13 @@ public class TransactionAggregate {
     private Long transactionId;
     private Long customerId;
     private Double amount;
-    private String type;
-    private String iban;
+    private String transactionType;
+    private String transactionName;
 
     public TransactionAggregate() {
         // Required by Axon
     }
 
-    @CommandHandler
-    public TransactionAggregate(AddTransactionCommand command) {
-        Transaction transaction = new Transaction(command.getCustomerId(), command.getAmount(), command.getType(), command.getIban());
-        apply(new TransactionAddedEvent(transaction));
-    }
 
     @EventSourcingHandler
     public void on(TransactionAddedEvent event) {
@@ -36,7 +31,7 @@ public class TransactionAggregate {
         this.transactionId = transaction.getId();
         this.customerId = transaction.getCustomerId();
         this.amount = transaction.getAmount();
-        this.type = transaction.getType();
-        this.iban = transaction.getIban();
+        this.transactionType = transaction.getTransactionType();
+        this.transactionName = transaction.getAssetName();
     }
 }

@@ -11,13 +11,13 @@ public class OrderUpdatedEvent {
     private final String orderId;
     private final Long customerId;
     private final String assetName;
-    private final String orderSide;
+    private final Double orderSide;
     private final Double price;
     private final Double size;
     private final String status;
     private final LocalDateTime createDate;
 
-    public OrderUpdatedEvent(String orderId, Long customerId, String assetName, String orderSide, Double price, Double size, String status, LocalDateTime createDate) {
+    public OrderUpdatedEvent(String orderId, Long customerId, String assetName, Double orderSide, Double price, Double size, String status, LocalDateTime createDate) {
         this.orderId = orderId;
         this.customerId = customerId;
         this.assetName = assetName;

@@ -1,14 +1,14 @@
 package com.brokerage.orderservice.domain.query.handler;
 
-import com.brokerage.orderservice.domain.model.Order;
-import com.brokerage.orderservice.domain.query.FindOrderByIdQuery;
-import com.brokerage.orderservice.domain.query.ListOrdersQuery;
+import com.brokerage.common.domain.query.ListOrdersQuery;
+import com.brokerage.common.domain.model.dto.Order;
+import com.brokerage.common.domain.query.FindOrderByIdQuery;
 import com.brokerage.orderservice.repository.OrderRepository;
 import org.axonframework.queryhandling.QueryHandler;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
@@ -18,13 +18,20 @@ public class OrderQueryHandler {
     private static final Logger logger = LoggerFactory.getLogger(OrderQueryHandler.class);
 
     @Autowired
-    private OrderRepository orderRepository;
+    public OrderRepository orderRepository;
 
     @QueryHandler
     public List<Order> handle(ListOrdersQuery query) {
         logger.info("Handling ListOrdersQuery: {}", query);
-        List<Order> orders = orderRepository.findByCustomerIdAndCreateDateBetween(
-                query.getCustomerId(), query.getStartDate(), query.getEndDate());
+        List<Order> orders = null;
+        if(query.getCustomerId()==null)
+        {
+            orders = orderRepository.findAll();
+        } else if (query.getEndDate()==null || query.getStartDate()==null) {
+            orders = orderRepository.findByCustomerIdAndStatus(query.getCustomerId(),query.getOrderState().toString());
+        } else{
+            orders = orderRepository.findByCustomerIdAndStatusAndCreateDateBetween(query.getCustomerId(),query.getOrderState().toString(),query.getStartDate(),query.getEndDate());
+        }
         logger.info("Found orders: {}", orders);
         return orders;
     }

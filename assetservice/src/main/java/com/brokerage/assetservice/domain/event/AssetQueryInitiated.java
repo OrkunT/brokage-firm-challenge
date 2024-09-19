@@ -1,7 +1,7 @@
 package com.brokerage.assetservice.domain.event;
 
 public class AssetQueryInitiated {
-    private Long customerId;
+    private final Long customerId;
 
     public AssetQueryInitiated(Long customerId) {
         this.customerId = customerId;

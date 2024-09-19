@@ -1,7 +1,7 @@
 package com.brokerage.assetservice.domain.event;
 
 public class AssetQueryFailed {
-    private String reason;
+    private final String reason;
 
     public AssetQueryFailed(String reason) {
         this.reason = reason;

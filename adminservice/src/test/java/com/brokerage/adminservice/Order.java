@@ -1,4 +1,4 @@
-package com.brokerage.adminservice;
+package com.brokerage.common;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;

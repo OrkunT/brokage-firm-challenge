@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component jdk="corretto-21" jdk_type="JavaSDK">
+<contentEntry url="file://$MODULE_DIR$/../common/target/classes"/>
+	<contentEntry url="file://$MODULE_DIR$"/>
+	<contentEntry url="file://$MODULE_DIR$"/>
+	<contentEntry url="file://$MODULE_DIR$/target/classes"/>
+</component>

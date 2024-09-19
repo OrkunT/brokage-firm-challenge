@@ -1,6 +1,7 @@
 package com.brokerage.adminservice.controller;
 
 import com.brokerage.adminservice.service.AdminService;
+import com.brokerage.common.domain.query.OrderState;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,7 +19,7 @@ public class AdminController {
 
     @PostMapping("/matchOrders")
     public ResponseEntity<Void> matchOrders() {
-        adminService.matchOrders();
+        adminService.fetchMatchOrders(OrderState.PENDING);
         return ResponseEntity.noContent().build();
     }
 }

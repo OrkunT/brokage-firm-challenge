@@ -1,6 +1,6 @@
 package com.brokerage.assetservice.domain.event;
 
-import com.brokerage.assetservice.domain.model.Asset;
+import com.brokerage.common.domain.model.dto.Asset;
 import lombok.Getter;
 import lombok.Setter;
 

@@ -1,9 +1,11 @@
 package com.brokerage.transactionservice.domain.event;
 
-import com.brokerage.transactionservice.domain.model.Transaction;
+import com.brokerage.common.domain.model.dto.Transaction;
+
+import lombok.Data;
 import lombok.Getter;
 
-@Getter
+@Data
 public class TransactionAddedEvent {
     private final Transaction transaction;
 

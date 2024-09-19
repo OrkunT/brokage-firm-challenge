@@ -1,14 +1,13 @@
 package com.brokerage.orderservice.exception;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import org.springframework.http.HttpStatus;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
-@Getter
-@Setter
+@Data
 public class ApiError {
     private HttpStatus status;
     private String message;
@@ -25,7 +24,7 @@ public class ApiError {
         super();
         this.status = status;
         this.message = message;
-        this.errors = Arrays.asList(error);
+        this.errors = Collections.singletonList(error);
     }
 
     // Getters and setters
